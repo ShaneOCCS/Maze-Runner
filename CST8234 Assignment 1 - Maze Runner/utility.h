@@ -21,3 +21,4 @@ void getMazeStart(char** maze, int cols, int* playerX, int* playerY);
 char getCharAt(char** maze, int posX, int posY);
 void setCharAt(char** maze, int posX, int posY, char character);
 void playerMove(char** maze, int posX, int posY, int* playerPosX, int* playerPosY, int* moveCount);
+void freeMemory(char** maze, int rows);
