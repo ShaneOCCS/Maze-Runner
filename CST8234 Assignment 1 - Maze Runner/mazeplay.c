@@ -117,11 +117,7 @@ int main() {
         case 'q':
             printf("%s\n", "Exiting the program.");
             printf("%s\n", "Program made by Shane O'Connell (041144343).");
-               for (i = 0; i < rows; i++) { /* Loop to free each individual row of the maze. */
-                char* row = *((char **)((char *)maze + i * sizeof(char *))); 
-                free(row);
-            }
-            free(maze);
+            freeMemory(maze, rows);
             exit(1);
 
         case 'Y': /* If the user would like to play again after victory case. */
