@@ -14,6 +14,16 @@
 #include <stddef.h>
 #include "utility.h"
 
+/* This method frees memory for the maze and the rows of the maze to prevent leaks. */
+void freeMemory(char** maze, int rows) {
+    int i;
+    for (i = 0; i < rows; i++) { /* Loop to free each individual row of the maze. */
+                char* row = *((char **)((char *)maze + i * sizeof(char *))); 
+                free(row);
+            }
+            free(maze);
+}
+
 /* Checks the % of period characters there are in a maze. */
 double checkMaze(char** maze, int rows, int cols) {
     int i;
@@ -31,7 +41,6 @@ double checkMaze(char** maze, int rows, int cols) {
             }
         }
     }
-
     return percent;
 }
 
@@ -96,7 +105,7 @@ void mazePath(char *row, char *previousRow, int columns, int index, int lastInde
 
     if (previousRow == NULL) { /* Ensure that the first row can connect to the starting point. */
         int randomStart = generateRandomNumber(1, columns -2);
-        *((char *)((char *)row + sizeof(char) * randomStart)) = '.';
+        *(((char *)row + sizeof(char) * randomStart)) = '.';
         return;
     }
 
@@ -105,7 +114,7 @@ void mazePath(char *row, char *previousRow, int columns, int index, int lastInde
             int* sPathVals = findValidPath(previousRow, columns, '.', NULL);
             if (sPathVals != NULL) {
                 int sColIndex = *(int*)((char*)sPathVals + sizeof(int) * 0);
-                *((char *)((char *)row + sizeof(char) * sColIndex)) = '.';
+                *(((char *)row + sizeof(char) * sColIndex)) = '.';
             }
             free(sPathVals);
             return;
@@ -120,7 +129,7 @@ void mazePath(char *row, char *previousRow, int columns, int index, int lastInde
                 int leftBound = generateRandomNumber(1, chosenPrevColIdx); /* Determines left bound.*/
                 int i;
                 for (i = leftBound; i <= rightBound; i++) { /* Set each character in the current row within these bounds to a '.'. */
-                    *((char *)((char *)row + sizeof(char) * i)) = '.';
+                    *(((char *)row + sizeof(char) * i)) = '.';
                 }
             }
         }
@@ -130,7 +139,7 @@ void mazePath(char *row, char *previousRow, int columns, int index, int lastInde
         int* validPaths = findValidPath(previousRow, columns, '.', &buffVal); /* Find valid path locations in the previous row. */
         int randNum = generateRandomNumber(0, buffVal -1); 
         int randIndex = *(int*)((char*)validPaths + sizeof(int) * (randNum));
-        *((char *)((char *)row + sizeof(char) * randIndex)) = '.';  /* Sets the chosen path spot to a '.'. */
+        *(((char *)row + sizeof(char) * randIndex)) = '.';  /* Sets the chosen path spot to a '.'. */
         free(validPaths);
     }
 
@@ -140,9 +149,9 @@ void mazePath(char *row, char *previousRow, int columns, int index, int lastInde
         int i;
         for (i = 0; i < columns; i++) { /* Loops through the last row to place an E so the user can exit the program. */
             if (i == *validPaths) { 
-                *((char *)((char *)row + sizeof(char) * i)) = 'E'; 
+                *(((char *)row + sizeof(char) * i)) = 'E'; 
             } else {
-                *((char *)((char *)row + sizeof(char) * i)) = '#';
+                *(((char *)row + sizeof(char) * i)) = '#';
             }
         }
     }
@@ -155,7 +164,7 @@ void printMaze(char **maze, int rows, int columns) {
     for (i = 0; i < rows; i++) { /* Outer loop iterates through each row pointer in the maze structure. */
         char *row = *((char **)((char *)maze + i * sizeof(char *))); /* Dereferences the pointer to the 'i'-th row pointer within the maze structure. */
         for (j = 0; j < columns; j++) { /* Inner loop iterates through and prints each character pointed to by the current row pointer. */
-            printf("%c", *((char *)((char *)row + sizeof(char) * j)));
+            printf("%c", *(((char *)row + sizeof(char) * j)));
         }
         printf("\n"); /* Formats the maze properly. */
     }
@@ -180,7 +189,7 @@ char **generateMaze(int rows, int columns) {
 
         *((char **)((char *)maze + i * sizeof(char *))) = row; /* Stores the pointer to the newly allocated character segment into the maze. */
         for (j = 0; j < columns; j++) { /* Make the walls for the maze. */
-            *((char *)((char *)row + sizeof(char) * j)) = '#';
+            *(((char *)row + sizeof(char) * j)) = '#';
         }
 
         if (i == 0) { /* Check to see if it is the first row of the maze. */
@@ -195,13 +204,8 @@ char **generateMaze(int rows, int columns) {
     }
 
     while (checkMaze(maze, rows, columns) > 25.0) { /* Regenerate the maze if there is too many '.' characters. */
-           for (i = 0; i < rows; i++) { /* Loop to free each individual row of the maze. */
-                char* row = *((char **)((char *)maze + i * sizeof(char *))); 
-                free(row);
-            }
-            free(maze);
+        freeMemory(maze, rows);
         maze = generateMaze(rows, columns); /* Generates a new maze replacing previous maze. */
     }
-
     return maze;
 }
