@@ -25,13 +25,13 @@ void getMazeStart(char** maze, int cols, int* playerX, int* playerY) {
 /* Retrieves the character at a specific position in the maze. */
 char getCharAt(char** maze, int posX, int posY) {
     char *row = *((char **)((char *)maze + posY * sizeof(char *))); /* Get the pointer to the specified row. */
-    return *((char *)((char *)row + sizeof(char) * posX)); /* Return specified character. */
+    return *(((char *)row + sizeof(char) * posX)); /* Return specified character. */
 }
 
 /* Sets a character at a specific position in the maze. */
 void setCharAt(char** maze, int posX, int posY, char character) {
     char *row = *((char **)((char *)maze + posY * sizeof(char *))); /* Get the pointer to the specified row. */
-    *((char *)((char *)row + sizeof(char) * posX)) = character; /* Set the character at the specified column in that row. */
+    *(((char *)row + sizeof(char) * posX)) = character; /* Set the character at the specified column in that row. */
 }
 
 /* Handles player movement within the maze, updating their position and checking for walls/exit. */
@@ -47,7 +47,7 @@ void playerMove(char** maze, int posX, int posY, int* playerPosX, int* playerPos
         return;
     }
 
-    if (getCharAt(maze, posX, posY) != '.' && getCharAt(maze, posX, posY) != '*') { /* CHecks if it is a wall. */
+    if (getCharAt(maze, posX, posY) != '.' && getCharAt(maze, posX, posY) != '*') { /* Checks if it is a wall. */
         printf("%s\n", "You walked into a wall! ");
         return;
     }
@@ -128,11 +128,7 @@ int main() {
         case 'y':
             moveCount = 0;
               
-            for (i = 0; i < rows; i++) { /* Loop to free each individual row of the maze. */
-                char* row = *((char **)((char *)maze + i * sizeof(char *))); 
-                free(row);
-            }
-            free(maze);
+            freeMemory(maze, rows);
 
             rows = generateRandomNumber(10, 20);
             columns = generateRandomNumber(10, 20);
@@ -147,12 +143,8 @@ int main() {
             printf("%s\n", "Thanks for playing.");
             printf("%s\n", "Now exiting the program.");
             printf("%s\n", "Program made by Shane O'Connell (041144343).");
-                
-            for (i = 0; i < rows; i++) { /* Loop to free each individual row of the maze. */
-                char* row = *((char **)((char *)maze + i * sizeof(char *))); 
-                free(row);
-            }
-            free(maze);
+            
+            freeMemory(maze, rows);
             
             exit(1);
 
