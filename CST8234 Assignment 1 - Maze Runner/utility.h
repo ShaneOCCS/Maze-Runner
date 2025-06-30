@@ -8,8 +8,6 @@
    as prototype functions to be used in mazegen.c and mazeplay.c.
 */
 
-#include <stddef.h>
-
 /* Prototype functions to be used later on. */
 double checkMaze(char** maze, int rows, int cols);
 int* findValidPath(char *row, size_t rowLength, char target, size_t* buff);
