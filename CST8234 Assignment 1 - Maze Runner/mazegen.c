@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <stddef.h>
 #include "utility.h"
 
 /* This method frees memory for the maze and the rows of the maze to prevent leaks. */
